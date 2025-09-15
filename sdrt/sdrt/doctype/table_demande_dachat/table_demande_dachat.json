@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-11 15:18:50.364750",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_dek7",
+  "code_analytique",
+  "description",
+  "qte",
+  "pu",
+  "estimation",
+  "mode_de_passation_propos\u00e9",
+  "column_break_lbgn",
+  "avis_contr\u00f4le_de_gestion"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_dek7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "code_analytique.description",
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "qte",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "QTE",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "pu",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "PU",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "estimation",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Estimation"
+  },
+  {
+   "fieldname": "column_break_lbgn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mode_de_passation_propos\u00e9",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mode de passation propos\u00e9",
+   "reqd": 1
+  },
+  {
+   "fieldname": "code_analytique",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Code analytique",
+   "options": "SDR Budget",
+   "reqd": 1
+  },
+  {
+   "default": "OK/Ok",
+   "fieldname": "avis_contr\u00f4le_de_gestion",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Avis Contr\u00f4le de Gestion"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-15 12:16:09.728553",
+ "modified_by": "Administrator",
+ "module": "Sdrt",
+ "name": "table demande dachat",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

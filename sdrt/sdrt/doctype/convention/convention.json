@@ -1,0 +1,91 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:convention",
+ "creation": "2025-09-10 12:56:47.308336",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "convention",
+  "code_convention",
+  "date_signature_covention",
+  "montant_total",
+  "section_break_pmrt",
+  "table_amqw"
+ ],
+ "fields": [
+  {
+   "fieldname": "code_convention",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "code convention",
+   "options": "C.##",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "convention",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "convention",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "date_signature_covention",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date signature covention",
+   "reqd": 1
+  },
+  {
+   "fieldname": "montant_total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Montant total",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_pmrt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "columns": 6,
+   "fieldname": "table_amqw",
+   "fieldtype": "Table",
+   "label": "financement du projet",
+   "options": "financement du convention"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-11 16:42:40.157698",
+ "modified_by": "Administrator",
+ "module": "Sdrt",
+ "name": "convention",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

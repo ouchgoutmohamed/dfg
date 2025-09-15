@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-10 11:22:07.977841",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_zkfl",
+  "ann\u00e9e_bud\u00e9taire",
+  "partenaires",
+  "column_break_pcth",
+  "montant",
+  "financement_du_projet",
+  "commission_sdrt",
+  "date_pr\u00e9vue_pour_lencaissement",
+  "column_break_owzc"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_zkfl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "ann\u00e9e_bud\u00e9taire",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Ann\u00e9e bud\u00e9taire",
+   "reqd": 1
+  },
+  {
+   "fieldname": "partenaires",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Partenaires",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_pcth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "montant",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Montant",
+   "reqd": 1
+  },
+  {
+   "fieldname": "financement_du_projet",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Financement du projet",
+   "reqd": 1
+  },
+  {
+   "fieldname": "commission_sdrt",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Commission SDRT",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date_pr\u00e9vue_pour_lencaissement",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date pr\u00e9vue pour l'encaissement",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_owzc",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-10 16:09:11.702790",
+ "modified_by": "Administrator",
+ "module": "Sdrt",
+ "name": "financement du convention",
+ "owner": "Administrator@gmail.com",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

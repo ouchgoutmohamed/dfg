@@ -1,0 +1,59 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:direction",
+ "creation": "2025-09-10 09:39:06.168640",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "direction",
+  "code_direction"
+ ],
+ "fields": [
+  {
+   "fieldname": "direction",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Direction",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "code_direction",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Code direction",
+   "reqd": 1,
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-11 10:18:55.974882",
+ "modified_by": "Administrator",
+ "module": "Sdrt",
+ "name": "Direction",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

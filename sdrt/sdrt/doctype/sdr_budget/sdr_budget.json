@@ -1,0 +1,215 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:code_analytique",
+ "creation": "2025-09-11 12:10:27.708949",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_7dso",
+  "direction",
+  "code_direction",
+  "programme",
+  "code_programme",
+  "projet",
+  "code_projet",
+  "convention",
+  "code_convention",
+  "column_break_wevr",
+  "unit\u00e9_opp\u00e9ration",
+  "code_uo",
+  "article",
+  "code_action",
+  "description",
+  "compte_comptable",
+  "montant",
+  "champ_libre_1",
+  "champ_libre_2",
+  "champ_libre_3",
+  "code_analytique",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_7dso",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "direction",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Direction ",
+   "options": "Direction",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "direction.code_direction",
+   "fetch_if_empty": 1,
+   "fieldname": "code_direction",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Code direction",
+   "read_only": 1
+  },
+  {
+   "fieldname": "programme",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": " Programme",
+   "options": "Programme",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "programme.code_programme",
+   "fetch_if_empty": 1,
+   "fieldname": "code_programme",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Code programme ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "projet",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": " Projet ",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "projet.code_projet",
+   "fieldname": "code_projet",
+   "fieldtype": "Data",
+   "label": "Code projet "
+  },
+  {
+   "fieldname": "convention",
+   "fieldtype": "Link",
+   "label": "Convention",
+   "options": "convention",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "convention.code_convention",
+   "fetch_if_empty": 1,
+   "fieldname": "code_convention",
+   "fieldtype": "Data",
+   "label": "Code convention"
+  },
+  {
+   "fieldname": "unit\u00e9_opp\u00e9ration",
+   "fieldtype": "Data",
+   "label": "Unit\u00e9 opp\u00e9rationnelle"
+  },
+  {
+   "fieldname": "code_uo",
+   "fieldtype": "Data",
+   "label": "Code UO"
+  },
+  {
+   "fieldname": "article",
+   "fieldtype": "Data",
+   "label": "Article"
+  },
+  {
+   "fieldname": "code_action",
+   "fieldtype": "Data",
+   "label": "Code action"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
+  },
+  {
+   "default": "NS",
+   "fieldname": "champ_libre_1",
+   "fieldtype": "Data",
+   "label": " Champ libre 1"
+  },
+  {
+   "default": "NS",
+   "fieldname": "champ_libre_2",
+   "fieldtype": "Data",
+   "label": " Champ libre 2"
+  },
+  {
+   "default": "NS",
+   "fieldname": "champ_libre_3",
+   "fieldtype": "Data",
+   "label": " Champ libre 3"
+  },
+  {
+   "fieldname": "code_analytique",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Code analytique",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_wevr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "montant",
+   "fieldtype": "Currency",
+   "label": "Montant",
+   "reqd": 1
+  },
+  {
+   "fieldname": "compte_comptable",
+   "fieldtype": "Data",
+   "label": "Compte cmptable"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "SDR Budget",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-15 10:47:57.857180",
+ "modified_by": "Administrator",
+ "module": "Sdrt",
+ "name": "SDR Budget",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
