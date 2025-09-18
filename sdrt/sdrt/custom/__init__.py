@@ -297,3 +297,43 @@ def validate_purchase_order_item(doc, method):
 					'is_stock_item': 0
 				}).insert(ignore_permissions=True)
 
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_default_supplier_query(doctype, txt, searchfield, start, page_len, filters):
+	"""Safe override of ERPNext Material Request supplier link query.
+
+	Fixes edge case when Material Request has no items, which causes SQL `IN ()` error.
+	Behavior:
+	- If MR has items, delegate to core method for full behavior.
+	- If MR has no items, return an empty result set safely.
+	"""
+	mr_name = None
+	if isinstance(filters, dict):
+		mr_name = filters.get("doc")
+	# Defensive: filters can be a JSON string in some calls
+	if not mr_name and isinstance(filters, str):
+		try:
+			data = frappe.parse_json(filters)
+			mr_name = data.get("doc") if isinstance(data, dict) else None
+		except Exception:
+			mr_name = None
+
+	if not mr_name:
+		return []
+
+	try:
+		doc = frappe.get_doc("Material Request", mr_name)
+	except Exception:
+		return []
+
+	# If there are no items on the standard child table, avoid calling core (would generate IN ())
+	if not getattr(doc, "items", None):
+		return []
+
+	# Delegate to core implementation for normal path
+	core = frappe.get_attr(
+		"erpnext.stock.doctype.material_request.material_request.get_default_supplier_query"
+	)
+	return core(doctype, txt, searchfield, start, page_len, filters)
+

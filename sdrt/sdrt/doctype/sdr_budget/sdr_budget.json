@@ -28,8 +28,8 @@
   "champ_libre_2",
   "champ_libre_3",
   "code_analytique",
- "committed_amount",
- "available_amount",
+  "committed_amount",
+  "available_amount",
   "amended_from"
  ],
  "fields": [
@@ -160,19 +160,19 @@
    "reqd": 1
   },
     {
-     "default": "0",
-     "fieldname": "committed_amount",
-     "fieldtype": "Currency",
-     "label": "Montant engagé",
-     "read_only": 1
-    },
-    {
-     "default": "0",
-     "fieldname": "available_amount",
-     "fieldtype": "Currency",
-     "label": "Montant disponible",
-     "read_only": 1
-    },
+        "default": "0",
+        "fieldname": "committed_amount",
+        "fieldtype": "Currency",
+        "label": "Montant engagé",
+        "read_only": 1
+        },
+        {
+        "default": "0",
+        "fieldname": "available_amount",
+        "fieldtype": "Currency",
+        "label": "Montant disponible",
+        "read_only": 1
+        },
   {
    "fieldname": "compte_comptable",
    "fieldtype": "Data",
