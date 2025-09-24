@@ -146,12 +146,12 @@
    "columns": 2,
    "fieldname": "code_analytique",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_filter": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Code analytique",
-   "options": "SDR Budget",
-   "reqd": 1
+   "options": "SDR Budget"
   },
   {
    "fieldname": "supplier_part_no",
@@ -947,7 +947,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-19 11:32:21.604523",
+ "modified": "2025-09-24 12:45:59.763708",
  "modified_by": "Administrator",
  "module": "Sdrt",
  "name": "Purchase Order Item",

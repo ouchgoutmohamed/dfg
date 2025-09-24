@@ -186,8 +186,8 @@
   {
    "fieldname": "code_analytique",
    "fieldtype": "Data",
-   "label": "Code analytique",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Code analytique"
   },
   {
    "fieldname": "product_bundle",
@@ -1157,7 +1157,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-22 10:55:47.207351",
+ "modified": "2025-09-24 12:48:33.875876",
  "modified_by": "Administrator",
  "module": "Sdrt",
  "name": "Purchase Receipt Item",
