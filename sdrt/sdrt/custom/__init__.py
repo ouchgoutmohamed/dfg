@@ -13,7 +13,6 @@ from frappe.utils import flt
 __all__ = [
     'get_multi_da_budget_lines', 
     'engage_budgets_for_po', 
-    'disengage_budgets_for_po',
     'validate_purchase_order_item',
     'rollback_budgets_for_po',
     'update_sdr_budget_available',
@@ -236,131 +235,140 @@ def rollback_budgets_for_po(doc, method=None):
 		if code and amount:
 			_rollback_budget(code, amount)
 
+def _map_by_po_item(doc):
+	"""Build an index of Purchase Order Item by name for fast lookup.
 
-	def _map_by_po_item(doc):
-		"""Build an index of Purchase Order Item by name for fast lookup.
-
-		Supports both single and multiple Purchase Orders referenced by PR items.
-		"""
-		from frappe.utils import flt
-		index: dict[str, dict] = {}
-		po_cache: dict[str, any] = {}
-		for it in getattr(doc, "items", []) or []:
-			po = getattr(it, "purchase_order", None) or getattr(doc, "purchase_order", None)
-			poi = getattr(it, "po_detail", None) or getattr(it, "purchase_order_item", None)
-			if not po or not poi or poi in index:
-				continue
-			if po not in po_cache:
-				try:
-					po_cache[po] = frappe.get_doc("Purchase Order", po)
-				except Exception:
-					po_cache[po] = None
-			po_doc = po_cache.get(po)
-			if not po_doc:
-				continue
-			for po_it in po_doc.get("items") or []:
-				name = getattr(po_it, "name", None)
-				if name:
-					index[name] = po_it
-		return index
+	Supports both single and multiple Purchase Orders referenced by PR items.
+	"""
+	index: dict[str, dict] = {}
+	po_cache: dict[str, any] = {}
+	for it in getattr(doc, "items", []) or []:
+		po = getattr(it, "purchase_order", None) or getattr(doc, "purchase_order", None)
+		poi = getattr(it, "po_detail", None) or getattr(it, "purchase_order_item", None)
+		if not po or not poi or poi in index:
+			continue
+		if po not in po_cache:
+			try:
+				po_cache[po] = frappe.get_doc("Purchase Order", po)
+			except Exception:
+				po_cache[po] = None
+		po_doc = po_cache.get(po)
+		if not po_doc:
+			continue
+		for po_it in po_doc.get("items") or []:
+			name = getattr(po_it, "name", None)
+			if name:
+				index[name] = po_it
+	return index
 
 
-	def sync_pr_items_from_po(doc, method=None):
-		"""Enrich Purchase Receipt Items with custom fields from linked Purchase Order Items.
+def sync_pr_items_from_po(doc, method=None):
+	"""Enrich Purchase Receipt Items with custom fields from linked Purchase Order Items.
 
-		Minimal and safe: executed after the standard map; only copies custom fields and
-		doesn't override core quantities, warehouses, prices, or dates.
+	Minimal and safe: executed after the standard map; only copies custom fields and
+	doesn't override core quantities, warehouses, prices, or dates.
 
-		Fields copied (if present on PO Item):
-		- code_analytique -> set on PR Item
-		- description (custom) -> set on PR Item's item_name, if item_name currently equals
-		  the budget code or placeholder label.
-		"""
-		if not getattr(doc, "items", None):
-			return
+	Fields copied (if present on PO Item):
+	- code_analytique -> set on PR Item
+	- description (custom) -> set on PR Item's item_name, if item_name currently equals
+	  the budget code or placeholder label.
+	"""
+	if not getattr(doc, "items", None):
+		return
 
-		# Build a lookup of PO Item rows by name once
-		poi_index = _map_by_po_item(doc)
-		if not poi_index:
-			return
+	# Build a lookup of PO Item rows by name once
+	poi_index = _map_by_po_item(doc)
+	if not poi_index:
+		return
 
-		for it in doc.items:
-			po_item_name = getattr(it, "po_detail", None) or getattr(it, "purchase_order_item", None)
-			if not po_item_name:
-				continue
-			src = poi_index.get(po_item_name)
-			if not src:
-				continue
+	for it in doc.items:
+		po_item_name = getattr(it, "po_detail", None) or getattr(it, "purchase_order_item", None)
+		if not po_item_name:
+			continue
+		src = poi_index.get(po_item_name)
+		if not src:
+			continue
 
-			# Copy code_analytique if defined on PO Item
-			code = getattr(src, "code_analytique", None)
-			if code:
-				it.code_analytique = code
+		# Copy code_analytique if defined on PO Item
+		code = getattr(src, "code_analytique", None)
+		if code:
+			it.code_analytique = code
 
-			# Copy a more user-friendly description if available, without breaking standard naming
-			desc = getattr(src, "item_name", None)
-			# Prefer explicit custom description field when present
-			if hasattr(src, "description") and getattr(src, "description"):
-				desc = getattr(src, "description")
+		# Copy a more user-friendly description if available, without breaking standard naming
+		desc = getattr(src, "item_name", None)
+		# Prefer explicit custom description field when present
+		if hasattr(src, "description") and getattr(src, "description"):
+			desc = getattr(src, "description")
 
-			# If PR item looks like a placeholder, improve the label; otherwise leave it intact
-			if desc:
-				current_name = getattr(it, "item_name", "") or ""
-				placeholder_markers = {"BUDGET-LINE", code or ""}
-				if current_name.strip() in placeholder_markers:
-					it.item_name = desc
-
-
-	@frappe.whitelist()
-	def make_purchase_receipt_override(source_name, target_doc=None, args=None):
-		"""Clean override of ERPNext PO->PR mapping used by the 'Get Items' button.
-
-		Strategy:
-		- Delegate to the core ERPNext mapping function to produce the PR document.
-		- Post-process only the mapped child items to inject our custom fields:
-		  * copy code_analytique
-		  * set item_name from description when current item_name is a placeholder
-		- Do not alter quantities, warehouses, rate, taxes, or dates.
-		"""
-		# 1) Call core implementation to build base PR
-		core = frappe.get_attr("erpnext.buying.doctype.purchase_order.purchase_order.make_purchase_receipt")
-		pr = core(source_name, target_doc=target_doc, args=args)
-
-		# 2) Build a fast index of source PO Items by name
-		if not pr or not getattr(pr, "items", None):
-			return pr
-
-		try:
-			po = frappe.get_doc("Purchase Order", source_name)
-		except Exception:
-			return pr
-
-		src_by_name = {getattr(it, "name", None): it for it in (po.get("items") or []) if getattr(it, "name", None)}
-
-		# 3) Apply minimal enrichment to PR items
-		for it in pr.items:
-			po_item_name = getattr(it, "purchase_order_item", None) or getattr(it, "po_detail", None)
-			if not po_item_name:
-				continue
-			src = src_by_name.get(po_item_name)
-			if not src:
-				continue
-
-			code = getattr(src, "code_analytique", None)
-			if code:
-				it.code_analytique = code
-
-			# Prefer custom description if present, else fall back to item_name on PO line
-			desc = getattr(src, "description", None) or getattr(src, "item_name", None)
-			if desc:
-				current_name = getattr(it, "item_name", "") or ""
-				placeholders = {"BUDGET-LINE", (code or "")}
-				if current_name.strip() in placeholders:
-					it.item_name = desc
-
-		return pr
+		# If PR item looks like a placeholder, improve the label; otherwise leave it intact
+		if desc:
+			current_name = getattr(it, "item_name", "") or ""
+			placeholder_markers = {"BUDGET-LINE", code or ""}
+			if current_name.strip() in placeholder_markers:
+				it.item_name = desc
 
 
+@frappe.whitelist()
+def make_purchase_receipt_override(source_name, target_doc=None, args=None):
+    """Clean override of ERPNext PO->PR mapping used by the 'Get Items' button.
+
+    Strategy:
+    - Delegate to the core ERPNext mapping function to produce the PR document.
+    - IMMEDIATELY fix any numeric item_code issues using budget codes.
+    - Post-process only the mapped child items to inject our custom fields.
+    - Do not alter quantities, warehouses, rate, taxes, or dates.
+    """
+    # 1) Call core implementation to build base PR
+    core = frappe.get_attr("erpnext.buying.doctype.purchase_order.purchase_order.make_purchase_receipt")
+    pr = core(source_name, target_doc=target_doc, args=args)
+
+    # 2) Build a fast index of source PO Items by name
+    if not pr or not getattr(pr, "items", None):
+        return pr
+
+    try:
+        po = frappe.get_doc("Purchase Order", source_name)
+    except Exception:
+        return pr
+
+    src_by_name = {getattr(it, "name", None): it for it in (po.get("items") or []) if getattr(it, "name", None)}
+
+    # 3) Apply immediate fixes to prevent pricing errors, then enrichment
+    for it in pr.items:
+        po_item_name = getattr(it, "purchase_order_item", None) or getattr(it, "po_detail", None)
+        if not po_item_name:
+            continue
+        src = src_by_name.get(po_item_name)
+        if not src:
+            continue
+
+        code = getattr(src, "code_analytique", None)
+        
+        # CRITICAL: Fix numeric item_code immediately to prevent pricing errors
+        current_item_code = getattr(it, "item_code", "")
+        if current_item_code and current_item_code.isdigit() and code:
+            # Ensure the budget Item exists
+            _ensure_budget_item_exists(code, getattr(src, "item_name", None) or getattr(src, "description", None))
+            # Replace numeric item_code with the real budget Item
+            it.item_code = code
+        elif not current_item_code and code:
+            # If item_code is empty but we have a budget code, use it
+            _ensure_budget_item_exists(code, getattr(src, "item_name", None) or getattr(src, "description", None))
+            it.item_code = code
+
+        # Copy budget code field
+        if code:
+            it.code_analytique = code
+
+        # Improve item description when appropriate
+        desc = getattr(src, "description", None) or getattr(src, "item_name", None)
+        if desc:
+            current_name = getattr(it, "item_name", "") or ""
+            placeholders = {"BUDGET-LINE", (code or "")}
+            if current_name.strip() in placeholders:
+                it.item_name = desc
+
+    return pr
 def update_sdr_budget_available(doc, method=None):  # doc_events: before_insert, validate
 	"""Ensure available_amount = montant - committed_amount (ou = montant à la création).
 
@@ -434,30 +442,65 @@ def get_budget_placeholder_item():
 	return {'item_code': placeholder_code, 'stock_uom': stock_uom}
 
 
+def _ensure_budget_item_exists(code: str, description: str | None = None):
+	"""Ensure an Item with code `code` exists; create it with safe defaults if missing.
+
+	Returns the code back (useful for chaining).
+	"""
+	code = (code or '').strip()
+	if not code:
+		return code
+	if frappe.db.exists('Item', code):
+		return code
+
+	# Safe defaults matching ERPNext expectations
+	stock_uom = 'Nos'
+	item_group = 'All Item Groups' if frappe.db.exists('Item Group', 'All Item Groups') else (frappe.db.get_value('Item Group', {}, 'name') or 'All Item Groups')
+
+	# Create minimal non-stock, purchasable item
+	try:
+		frappe.get_doc({
+			'doctype': 'Item',
+			'item_code': code,
+			'item_name': (description or code)[:140],
+			'description': (description or code)[:1000],
+			'item_group': item_group,
+			'stock_uom': stock_uom,
+			'is_stock_item': 0,
+			'is_sales_item': 0,
+			'is_purchase_item': 1
+		}).insert(ignore_permissions=True)
+	except frappe.DuplicateEntryError:
+		pass
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), f"Auto-create Item failed for budget code {code}")
+	return code
+
+
 def validate_purchase_order_item(doc, method):
-	"""Custom validation for Purchase Order Item to bypass Item validation for budget lines."""
-	for item in doc.items:
-		# If item has code_analytique but no valid item_code, set a simple placeholder
-		if item.code_analytique and (not item.item_code or item.item_code in [None, '', 'None']):
-			# Set simple placeholder - no external dependencies
-			item.item_code = 'BUDGET-LINE'
-			
-			# Ensure UOM is valid - use simple defaults
-			if not item.uom:
-				item.uom = 'Nos'
-			if not item.stock_uom:
-				item.stock_uom = 'Nos'
-			
-			# Ensure the BUDGET-LINE item exists
-			if not frappe.db.exists('Item', 'BUDGET-LINE'):
-				frappe.get_doc({
-					'doctype': 'Item',
-					'item_code': 'BUDGET-LINE',
-					'item_name': 'Budget Placeholder',
-					'item_group': 'All Item Groups',
-					'stock_uom': 'Nos',
-					'is_stock_item': 0
-				}).insert(ignore_permissions=True)
+	"""Server guardrails for PO items:
+	- If code_analytique is given, ensure an Item with the same code exists and is set.
+	- Prevent numeric-only item_code like "1"; replace with code_analytique if available.
+	"""
+	for item in (doc.items or []):
+		code = (getattr(item, 'code_analytique', '') or '').strip()
+		item_code = (getattr(item, 'item_code', '') or '').strip()
+
+		# If user typed a numeric code (e.g., "1"), reset to budget code when available
+		if item_code and item_code.isdigit() and code:
+			item.item_code = code
+			item_code = code
+
+		# If we have a budget code, ensure the matching Item exists and is used
+		if code:
+			_ensure_budget_item_exists(code, getattr(item, 'item_name', None) or getattr(item, 'description', None))
+			item.item_code = code
+
+		# Ensure minimal UOM fields to pass standard validations
+		if not getattr(item, 'uom', None):
+			item.uom = 'Nos'
+		if not getattr(item, 'stock_uom', None):
+			item.stock_uom = item.uom or 'Nos'
 
 
 @frappe.whitelist()
@@ -501,15 +544,32 @@ def get_default_supplier_query(doctype, txt, searchfield, start, page_len, filte
 
 
 def validate_purchase_receipt_item(doc, method=None):
-	"""Custom validation for Purchase Receipt items.
-	
-	Placeholder function to satisfy hook requirements.
-	Can be extended with custom validation logic as needed.
-	
-	Args:
-		doc: Purchase Receipt document
-		method: Hook method (typically 'validate')
+	"""Server-side guardrails for Purchase Receipt items.
+
+	- Prevent numeric-only item_code (e.g., "1"): replace with budget item code when present
+	- Ensure the budget Item exists (auto-create if missing)
+	- Fill minimal UOM fields to satisfy core validations
 	"""
-	# Placeholder - add custom validation logic here if needed
-	pass
+	if not getattr(doc, 'items', None):
+		return
+
+	for it in doc.items:
+		code = (getattr(it, 'code_analytique', '') or '').strip()
+		item_code = (getattr(it, 'item_code', '') or '').strip()
+
+		# Replace numeric-only item_code with the budget code when available
+		if item_code and item_code.isdigit() and code:
+			_ensure_budget_item_exists(code, getattr(it, 'item_name', None) or getattr(it, 'description', None))
+			it.item_code = code
+
+		# If item_code missing but budget code available, set it
+		if (not getattr(it, 'item_code', None)) and code:
+			_ensure_budget_item_exists(code, getattr(it, 'item_name', None) or getattr(it, 'description', None))
+			it.item_code = code
+
+		# Ensure minimal UOM fields
+		if not getattr(it, 'uom', None):
+			it.uom = 'Nos'
+		if not getattr(it, 'stock_uom', None):
+			it.stock_uom = it.uom or 'Nos'
 

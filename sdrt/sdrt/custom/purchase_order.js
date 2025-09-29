@@ -28,8 +28,22 @@ frappe.ui.form.on('Purchase Order', {
 
 // Lightweight hooks to ensure calculations work with custom fields
 frappe.ui.form.on('Purchase Order Item', {
+  item_code: function(frm, cdt, cdn) {
+    const it = locals[cdt][cdn];
+    if (it.item_code && /^\d+$/.test(String(it.item_code))) {
+      // If user typed a numeric code (like "1"), switch back to the budget item
+      const fallback = it.code_analytique || '';
+      if (fallback) {
+        frappe.model.set_value(cdt, cdn, 'item_code', fallback);
+      }
+    }
+  },
   code_analytique: function(frm, cdt, cdn) {
     const item = locals[cdt][cdn];
+    // Ensure we use the real Item matching the budget code
+    if (item.code_analytique) {
+      frappe.model.set_value(cdt, cdn, 'item_code', item.code_analytique);
+    }
     
     // Fetch description from budget and set as item name
     if (item.code_analytique) {
@@ -138,13 +152,13 @@ function fetch_da_lines(frm, material_requests) {
 }
 
 function add_budget_lines_to_po(frm, budget_lines) {
-  // Add lines to Purchase Order - no Item dependency needed
+  // Add lines to Purchase Order using the auto-created Item matching the budget code
   const added_rows = [];
   budget_lines.forEach(line => {
     const item = frm.add_child('items');
 
-    // Core fields from DA - set minimal item_code to avoid validation error
-    item.item_code = 'BUDGET-LINE';
+    // Use the real Item code equal to the budget analytic code
+    item.item_code = line.code_analytique || '';
     item.code_analytique = line.code_analytique;
     item.item_name = (line.description && line.description.trim()) ? line.description : (line.code_analytique || __('Budget Line'));
     item.details = '';
