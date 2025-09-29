@@ -6,16 +6,17 @@ bench --site [site] console
 
 Dans la console:
 >>> exec(open('apps/sdrt/scripts/budget_items_utility.py').read())
->>> create_missing_items()
->>> # ou
->>> validate_budget_items()
+>>> create_missing_items()                 # crée les Items manquants et met à jour la direction pour ceux existants
+>>> backfill_item_directions()             # uniquement mise à jour du champ Item.direction d'après SDR Budget
+>>> validate_budget_items()                # vérifications diverses
 """
 
 import frappe
 
 def create_missing_items(limit=None):
-	"""Créer les Items manquants pour tous les budgets existants.
-	
+	"""Créer les Items manquants pour tous les budgets existants et
+	mettre à jour le champ Item.direction d'après le budget pour les Items déjà présents.
+
 	Args:
 		limit (int): Limiter le nombre de budgets traités (pour tests)
 	"""
@@ -44,6 +45,7 @@ def create_missing_items(limit=None):
 	created_count = 0
 	skipped_count = 0
 	error_count = 0
+	updated_direction = 0
 	
 	for budget_data in budgets:
 		code = budget_data.code_analytique
@@ -53,6 +55,23 @@ def create_missing_items(limit=None):
 			
 		# Vérifier si Item existe déjà
 		if frappe.db.exists("Item", {"item_code": code}):
+			# Backfill direction pour les Items existants
+			try:
+				item_dir = frappe.db.get_value("Item", code, "direction")
+				# Récupérer la valeur direction côté budget: prioriser le lien Direction sinon code_direction
+				bud = frappe.get_doc("SDR Budget", budget_data.name)
+				dir_value = None
+				# Si le lien Direction est saisi, son autoname == valeur à stocker
+				if getattr(bud, "direction", None):
+					dir_value = str(bud.direction).strip()
+				if not dir_value:
+					dir_value = (getattr(bud, "code_direction", "") or "").strip()
+				if dir_value and item_dir != dir_value:
+					frappe.db.set_value("Item", code, "direction", dir_value)
+					updated_direction += 1
+			except Exception as e:
+				# Ne pas bloquer, on continue
+				print(f"⚠️  Impossible de mettre à jour direction pour Item {code}: {e}")
 			skipped_count += 1
 			continue
 		
@@ -79,10 +98,11 @@ def create_missing_items(limit=None):
 	frappe.db.commit()
 	print(f"\n✅ Terminé!")
 	print(f"   📦 Items créés: {created_count}")
-	print(f"   ⏭️  Ignorés (déjà existants): {skipped_count}")
+	print(f"   🔄 Directions mises à jour (Items existants): {updated_direction}")
+	print(f"   ⏭️  Ignorés (déjà existants sans changement): {skipped_count}")
 	print(f"   ❌ Erreurs: {error_count}")
 	
-	return created_count
+	return {"created": created_count, "direction_updated": updated_direction, "skipped": skipped_count, "errors": error_count}
 
 def validate_budget_items():
 	"""Valider la cohérence entre budgets et items."""
@@ -197,6 +217,54 @@ def get_stats():
 	print(f"   🔗 Budgets avec Item: {budget_with_items}")
 	print(f"   ❓ Budgets sans Item: {budget_count - budget_with_items}")
 
+def backfill_item_directions(limit=None, only_missing=True):
+	"""Mettre à jour Item.direction pour les Items liés à des budgets (après import par ex.).
+
+	Args:
+		limit (int|None): Limiter le nombre de budgets traités.
+		only_missing (bool): Si True, ne met à jour que lorsque le champ direction est vide.
+	"""
+	print("🔄 Backfill du champ direction sur les Items à partir des budgets…")
+	filters = {"docstatus": ["!=", 2]}
+	fields = ["name", "code_analytique", "direction", "code_direction"]
+
+	budgets = frappe.get_all("SDR Budget", fields=fields, filters=filters, limit=limit)
+	if not budgets:
+		print("✅ Aucun budget trouvé.")
+		return {"updated": 0, "skipped": 0}
+
+	updated = 0
+	skipped = 0
+	errors = 0
+
+	for b in budgets:
+		code = (b.code_analytique or "").strip()
+		if not code:
+			skipped += 1
+			continue
+		if not frappe.db.exists("Item", code):
+			skipped += 1
+			continue
+
+		desired = (b.direction or "").strip() or (b.code_direction or "").strip()
+		try:
+			current = frappe.db.get_value("Item", code, "direction") or ""
+			if only_missing and current:
+				skipped += 1
+				continue
+			if desired and current != desired:
+				frappe.db.set_value("Item", code, "direction", desired)
+				updated += 1
+			else:
+				skipped += 1
+		except Exception as e:
+			errors += 1
+			print(f"⚠️  Erreur sur {code}: {e}")
+
+	frappe.db.commit()
+	print(f"✅ Backfill terminé. Mises à jour: {updated}, ignorés: {skipped}, erreurs: {errors}")
+	return {"updated": updated, "skipped": skipped, "errors": errors}
+
 # Fonctions de commodité
 def quick_fix():
 	"""Correction rapide : créer les Items manquants."""
@@ -215,6 +283,7 @@ if __name__ == "__main__":
 	print("🚀 Script utilitaire Budget → Item chargé!")
 	print("Fonctions disponibles:")
 	print("  • create_missing_items()")
+	print("  • backfill_item_directions()")
 	print("  • validate_budget_items()")
 	print("  • cleanup_orphaned_items()")
 	print("  • get_stats()")

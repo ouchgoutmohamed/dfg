@@ -10,7 +10,18 @@ import frappe
 from frappe import _
 from frappe.utils import flt
 
-__all__ = ['get_multi_da_budget_lines', 'engage_budgets_for_po', 'disengage_budgets_for_po']
+__all__ = [
+    'get_multi_da_budget_lines', 
+    'engage_budgets_for_po', 
+    'disengage_budgets_for_po',
+    'validate_purchase_order_item',
+    'rollback_budgets_for_po',
+    'update_sdr_budget_available',
+    'sync_pr_items_from_po',
+    'validate_purchase_receipt_item',
+    'get_default_supplier_query',
+    'make_purchase_receipt_override'
+]
 
 
 def _collect_da_lines(material_request: str) -> List[Dict]:
@@ -380,184 +391,125 @@ def engage_po_budgets(purchase_order: str):
 def get_budget_placeholder_item():
 	"""Return structured info for a generic non-stock Item used for budget-only PO lines.
 
-	Creates BUDGET-LINE item with proper expense account setup.
-	
-	Returns:
-		dict: {'item_code': str, 'stock_uom': str}
+	Best practice adjustments:
+	- Pick an existing UOM: prefer one of ['Nos','Unit','Unité','PCE','Each'] else first UOM found.
+	- Create item once with code 'BUDGET-LINE'.
+	- Return dict { item_code, stock_uom } instead of raw string for better client logic.
 	"""
 	placeholder_code = 'BUDGET-LINE'
-	
-	# Get or create the item
-	if frappe.db.exists('Item', placeholder_code):
-		stock_uom = frappe.db.get_value('Item', placeholder_code, 'stock_uom')
-		return {'item_code': placeholder_code, 'stock_uom': stock_uom or 'Nos'}
-	
-	# Create new budget placeholder item
-	chosen_uom = _get_default_uom()
-	item_group = _get_default_item_group()
-	
-	doc = frappe.get_doc({
-		'doctype': 'Item',
-		'item_code': placeholder_code,
-		'item_name': 'Budget Placeholder',
-		'item_group': item_group,
-		'include_item_in_manufacturing': 0,
-		'is_stock_item': 0,
-		'allow_alternative_item': 0,
-		'has_batch_no': 0,
-		'has_serial_no': 0,
-		'has_variants': 0,
-		'stock_uom': chosen_uom
-	})
-	
-	# Add expense account for each company
-	_add_expense_accounts(doc)
-	
-	doc.insert(ignore_permissions=True)
-	return {'item_code': placeholder_code, 'stock_uom': chosen_uom}
-
-
-def _get_default_uom():
-	"""Get a suitable UOM for the budget placeholder item."""
+	# Determine suitable UOM
 	preferred = ['Nos', 'Unit', 'Unité', 'PCE', 'Each']
-	for uom in preferred:
-		if frappe.db.exists('UOM', uom):
-			return uom
-	
-	# Fallback to any UOM
-	return frappe.db.get_value('UOM', {}, 'name') or 'Nos'
+	chosen_uom = None
+	for cand in preferred:
+		if frappe.db.exists('UOM', cand):
+			chosen_uom = cand
+			break
+	if not chosen_uom:
+		chosen_uom = frappe.db.get_value('UOM', {}, 'name') or 'Nos'
 
+	if not frappe.db.exists('Item', placeholder_code):
+		item_group = 'All Item Groups'
+		if not frappe.db.exists('Item Group', item_group):
+			first_group = frappe.db.get_value('Item Group', {}, 'name')
+			if first_group:
+				item_group = first_group or 'All Item Groups'
+		doc = frappe.get_doc({
+			'doctype': 'Item',
+			'item_code': placeholder_code,
+			'item_name': 'Budget Placeholder',
+			'item_group': item_group,
+			'include_item_in_manufacturing': 0,
+			'is_stock_item': 0,
+			'allow_alternative_item': 0,
+			'has_batch_no': 0,
+			'has_serial_no': 0,
+			'has_variants': 0,
+			'stock_uom': chosen_uom
+		})
+		doc.insert(ignore_permissions=True)
+		return {'item_code': placeholder_code, 'stock_uom': chosen_uom}
 
-def _get_default_item_group():
-	"""Get a suitable Item Group for the budget placeholder item."""
-	if frappe.db.exists('Item Group', 'All Item Groups'):
-		return 'All Item Groups'
-	
-	return frappe.db.get_value('Item Group', {}, 'name') or 'All Item Groups'
-
-
-def _add_expense_accounts(item_doc):
-	"""Add expense accounts for all companies to the item."""
-	companies = frappe.get_all('Company', fields=['name', 'abbr'])
-	
-	for company in companies:
-		expense_account = _get_expense_account(company.name, company.abbr)
-		if expense_account:
-			item_doc.append('item_defaults', {
-				'company': company.name,
-				'expense_account': expense_account
-			})
-
-
-def _get_expense_account(company_name, company_abbr):
-	"""Get the best expense account for a company."""
-	# Try common expense account patterns
-	candidates = [
-		f"Expenses - {company_abbr}",
-		f"Direct Expenses - {company_abbr}",
-		f"Cost of Goods Sold - {company_abbr}",
-		f"Operating Expenses - {company_abbr}"
-	]
-	
-	for candidate in candidates:
-		if frappe.db.exists('Account', candidate):
-			return candidate
-	
-	# Fallback: find any expense account for this company
-	return frappe.db.get_value('Account', {
-		'company': company_name,
-		'account_type': 'Expense Account',
-		'is_group': 0
-	}, 'name')
+	# If already exists, read its stock_uom
+	stock_uom = frappe.db.get_value('Item', placeholder_code, 'stock_uom') or chosen_uom
+	return {'item_code': placeholder_code, 'stock_uom': stock_uom}
 
 
 def validate_purchase_order_item(doc, method):
-	"""Custom validation for Purchase Order Item to ensure budget lines have proper items."""
+	"""Custom validation for Purchase Order Item to bypass Item validation for budget lines."""
 	for item in doc.items:
-		# If item has code_analytique but no valid item_code, set budget placeholder
+		# If item has code_analytique but no valid item_code, set a simple placeholder
 		if item.code_analytique and (not item.item_code or item.item_code in [None, '', 'None']):
-			placeholder_info = get_budget_placeholder_item()
-			item.item_code = placeholder_info['item_code']
+			# Set simple placeholder - no external dependencies
+			item.item_code = 'BUDGET-LINE'
 			
-			# Ensure UOM consistency
+			# Ensure UOM is valid - use simple defaults
 			if not item.uom:
-				item.uom = placeholder_info['stock_uom']
+				item.uom = 'Nos'
 			if not item.stock_uom:
-				item.stock_uom = placeholder_info['stock_uom']
-
-
-def set_expense_account_for_budget_items(doc, method=None):
-	"""Auto-set expense account for BUDGET-LINE items in Purchase Invoice."""
-	if doc.doctype != "Purchase Invoice":
-		return
-	
-	company = doc.company
-	if not company:
-		return
-	
-	company_abbr = frappe.get_cached_value('Company', company, 'abbr')
-	expense_account = _get_expense_account(company, company_abbr)
-	
-	if not expense_account:
-		return
-	
-	for item in doc.items:
-		if item.item_code == 'BUDGET-LINE' and not item.expense_account:
-			item.expense_account = expense_account
+				item.stock_uom = 'Nos'
+			
+			# Ensure the BUDGET-LINE item exists
+			if not frappe.db.exists('Item', 'BUDGET-LINE'):
+				frappe.get_doc({
+					'doctype': 'Item',
+					'item_code': 'BUDGET-LINE',
+					'item_name': 'Budget Placeholder',
+					'item_group': 'All Item Groups',
+					'stock_uom': 'Nos',
+					'is_stock_item': 0
+				}).insert(ignore_permissions=True)
 
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def get_default_supplier_query(doctype, txt, searchfield, start, page_len, filters):
-	"""Clean override of ERPNext Material Request supplier link query.
-	
-	Fixes SQL syntax error when Material Request has no items.
-	
-	Args:
-		doctype: Target doctype (Supplier)
-		txt: Search text
-		searchfield: Field to search in
-		start: Pagination start
-		page_len: Results per page
-		filters: Contains {"doc": "Material Request Name"}
-	
-	Returns:
-		List of supplier records or empty list if no items
+	"""Safe override of ERPNext Material Request supplier link query.
+
+	Fixes edge case when Material Request has no items, which causes SQL `IN ()` error.
+	Behavior:
+	- If MR has items, delegate to core method for full behavior.
+	- If MR has no items, return an empty result set safely.
 	"""
-	# Extract Material Request name from filters
 	mr_name = None
 	if isinstance(filters, dict):
 		mr_name = filters.get("doc")
-	elif isinstance(filters, str):
+	# Defensive: filters can be a JSON string in some calls
+	if not mr_name and isinstance(filters, str):
 		try:
 			data = frappe.parse_json(filters)
 			mr_name = data.get("doc") if isinstance(data, dict) else None
-		except (ValueError, TypeError):
-			pass
-	
+		except Exception:
+			mr_name = None
+
 	if not mr_name:
 		return []
-	
-	# Get Material Request document safely
+
 	try:
 		doc = frappe.get_doc("Material Request", mr_name)
-	except frappe.DoesNotExistError:
-		return []
-	
-	# Check if MR has items - return empty if not
-	items = getattr(doc, "items", None)
-	if not items or len(items) == 0:
-		return []
-	
-	# Delegate to core ERPNext implementation
-	try:
-		core_func = frappe.get_attr(
-			"erpnext.stock.doctype.material_request.material_request.get_default_supplier_query"
-		)
-		return core_func(doctype, txt, searchfield, start, page_len, filters)
-	except Exception as e:
-		frappe.log_error(f"Error calling core supplier query: {str(e)}", "Supplier Query Error")
+	except Exception:
 		return []
 
+	# If there are no items on the standard child table, avoid calling core (would generate IN ())
+	if not getattr(doc, "items", None):
+		return []
 
+	# Delegate to core implementation for normal path
+	core = frappe.get_attr(
+		"erpnext.stock.doctype.material_request.material_request.get_default_supplier_query"
+	)
+	return core(doctype, txt, searchfield, start, page_len, filters)
+
+
+def validate_purchase_receipt_item(doc, method=None):
+	"""Custom validation for Purchase Receipt items.
+	
+	Placeholder function to satisfy hook requirements.
+	Can be extended with custom validation logic as needed.
+	
+	Args:
+		doc: Purchase Receipt document
+		method: Hook method (typically 'validate')
+	"""
+	# Placeholder - add custom validation logic here if needed
+	pass
 

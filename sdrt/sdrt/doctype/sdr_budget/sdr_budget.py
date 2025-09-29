@@ -75,8 +75,18 @@ class SDRBudget(Document):
 			# Rien à faire sans code analytique
 			return
 
-		# Ne rien faire si l'Item existe déjà
+
+		# Si l'Item existe déjà, mettre à jour le champ custom 'direction' si nécessaire et sortir
 		if frappe.db.exists("Item", {"item_code": code}):
+			try:
+				dir_value = self._get_item_direction_value()
+				if dir_value:
+					existing_dir = frappe.db.get_value("Item", code, "direction")
+					if existing_dir != dir_value:
+						frappe.db.set_value("Item", code, "direction", dir_value)
+			except Exception:
+				# Ne bloque pas l'insertion du budget si la mise à jour échoue
+				frappe.log_error(frappe.get_traceback(), f"Mise à jour direction Item échouée pour {code}")
 			return
 
 		item_name = (self.description or code).strip()
@@ -117,6 +127,8 @@ class SDRBudget(Document):
 				"is_sales_item": 0,
 				"is_purchase_item": 1,  # Ligne budgétaire = achat potentiel
 				"include_item_in_manufacturing": 0,
+				# Champ custom 'direction' (Data) sur Item, rempli d'après SDR Budget
+				"direction": self._get_item_direction_value(),
 			})
 			item.insert(ignore_permissions=True)
 			
@@ -151,6 +163,25 @@ class SDRBudget(Document):
 			
 		return True
 
+	def _get_item_direction_value(self) -> str | None:
+		"""Retourne la valeur à stocker dans Item.direction.
+
+		Priorité:
+		1) Nom de la Direction (lien) -> correspond au champ Direction.direction (autoname)
+		2) code_direction (si fourni)
+		"""
+		# 1) Si un lien Direction est présent, utiliser son nom (identique au champ Data 'direction')
+		if getattr(self, "direction", None):
+			try:
+				name = str(self.direction).strip()
+				if name:
+					return name
+			except Exception:
+				pass
+		# 2) Sinon, fallback au code_direction
+		code = (getattr(self, "code_direction", None) or "").strip()
+		return code or None
+
 	@staticmethod
 	def create_items_for_existing_budgets():
 		"""Méthode utilitaire pour créer les Items manquants pour budgets existants.
@@ -165,10 +196,11 @@ class SDRBudget(Document):
 		)
 		
 		created_count = 0
+		updated_dir = 0
 		for budget_data in budgets:
 			if not budget_data.code_analytique:
 				continue
-				
+
 			if not frappe.db.exists("Item", {"item_code": budget_data.code_analytique}):
 				try:
 					budget_doc = frappe.get_doc("SDR Budget", budget_data.name)
@@ -181,9 +213,49 @@ class SDRBudget(Document):
 					created_count += 1
 				except Exception:
 					continue
+			else:
+				# Mettre à jour le champ direction si nécessaire
+				try:
+					budget_doc = frappe.get_doc("SDR Budget", budget_data.name)
+					dir_value = budget_doc._get_item_direction_value()
+					if dir_value:
+						existing_dir = frappe.db.get_value("Item", budget_data.code_analytique, "direction")
+						if existing_dir != dir_value:
+							frappe.db.set_value("Item", budget_data.code_analytique, "direction", dir_value)
+							updated_dir += 1
+				except Exception:
+					pass
 					
-		frappe.msgprint(f"Items créés: {created_count}/{len(budgets)}")
-		return created_count
+		frappe.msgprint(f"Items créés: {created_count}/{len(budgets)}; directions mises à jour: {updated_dir}")
+		return {"created": created_count, "direction_updated": updated_dir, "total_budgets": len(budgets)}
+
+	@staticmethod
+	def backfill_item_directions():
+		"""Met à jour Item.direction pour tous les Items existants liés à des budgets.
+
+		Utile après déploiement de cette fonctionnalité.
+		"""
+		rows = frappe.get_all(
+			"SDR Budget",
+			fields=["name", "code_analytique"],
+			filters={"docstatus": ["!=", 2]}
+		)
+		updated = 0
+		errors = 0
+		for r in rows:
+			code = (r.code_analytique or "").strip()
+			if not code or not frappe.db.exists("Item", code):
+				continue
+			try:
+				budget_doc = frappe.get_doc("SDR Budget", r.name)
+				dir_value = budget_doc._get_item_direction_value()
+				if dir_value and frappe.db.get_value("Item", code, "direction") != dir_value:
+					frappe.db.set_value("Item", code, "direction", dir_value)
+					updated += 1
+			except Exception:
+				errors += 1
+		frappe.msgprint(f"Directions mises à jour: {updated}; erreurs: {errors}")
+		return {"updated": updated, "errors": errors, "total": len(rows)}
 
 	# ----------------------
 	# Helpers internes

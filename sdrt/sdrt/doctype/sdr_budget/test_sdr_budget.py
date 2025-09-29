@@ -153,6 +153,71 @@ class TestSDRBudget(FrappeTestCase):
 			# Vérifier qu'il y a eu troncature dans les logs (optionnel)
 			pass
 
+	def test_item_direction_populated_on_create(self):
+		"""L'Item.direction doit être rempli depuis SDR Budget (fallback code_direction)."""
+		budget = frappe.get_doc({
+			"doctype": "SDR Budget",
+			"code_direction": "DIR-TEST",
+			"code_programme": "PRG",
+			"code_projet": "PRJ",
+			"code_convention": "CNV",
+			"code_uo": "UO",
+			"code_action": "ACT",
+			"compte_comptable": "CMP",
+			"description": "Direction mapping create",
+			"montant": 100
+		})
+		budget.insert()
+
+		item = frappe.get_doc("Item", budget.code_analytique)
+		self.assertEqual(item.get("direction"), "DIR-TEST")
+
+	def test_item_direction_backfilled_when_item_exists(self):
+		"""Si l'Item existe déjà, after_insert doit mettre à jour Item.direction."""
+		# Construire manuellement le code analytique attendu
+		segments = [
+			"D2",
+			"PX",
+			"PJX",
+			"CVX",
+			"UOX",
+			"AX",
+			"ACCX",
+			"NS",
+			"NS",
+			"NS",
+		]
+		code = ".".join(segments)
+
+		# Créer l'Item préexistant sans direction
+		if not frappe.db.exists("Item", code):
+			frappe.get_doc({
+				"doctype": "Item",
+				"item_code": code,
+				"item_name": "Préexistant",
+				"stock_uom": "Unité",
+				"item_group": "Tous les Groupes d'Articles",
+				"is_stock_item": 0
+			}).insert()
+
+		# Insérer le budget correspondant qui devrait backfiller la direction sur l'Item
+		bud = frappe.get_doc({
+			"doctype": "SDR Budget",
+			"code_direction": segments[0],
+			"code_programme": segments[1],
+			"code_projet": segments[2],
+			"code_convention": segments[3],
+			"code_uo": segments[4],
+			"code_action": segments[5],
+			"compte_comptable": segments[6],
+			"description": "Backfill direction",
+			"montant": 10
+		})
+		bud.insert()
+
+		# Vérifier la mise à jour
+		self.assertEqual(frappe.db.get_value("Item", code, "direction"), segments[0])
+
 	def tearDown(self):
 		"""Nettoyer après les tests."""
 		frappe.db.rollback()

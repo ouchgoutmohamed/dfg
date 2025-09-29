@@ -28,7 +28,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom DocPerm"
   },
   {
     "name": "42d3sh3qki",
@@ -59,7 +60,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom DocPerm"
   },
   {
     "name": "42e3rjdun9",
@@ -90,7 +92,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom DocPerm"
   },
   {
     "name": "42epcl0orl",
@@ -121,7 +124,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom DocPerm"
   },
   {
     "name": "buea1b4qjn",
@@ -152,7 +156,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom DocPerm"
   },
   {
     "name": "n7r9qajmio",
@@ -183,6 +188,7 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom DocPerm"
   }
 ]

@@ -57,7 +57,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Address-is_your_company_address",
@@ -117,7 +118,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Company-column_break_10",
@@ -177,7 +179,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Company-hr_and_payroll_tab",
@@ -237,7 +240,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Company-hr_settings_section",
@@ -297,7 +301,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Company-default_payroll_payable_account",
@@ -357,7 +362,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Company-default_employee_advance_account",
@@ -417,7 +423,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Company-default_expense_claim_payable_account",
@@ -477,7 +484,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Contact-is_billing_contact",
@@ -537,7 +545,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-approvers",
@@ -597,7 +606,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-column_break_9",
@@ -657,7 +667,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-leave_approvers",
@@ -717,7 +728,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-section_break_4",
@@ -777,7 +789,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-leave_block_list",
@@ -837,7 +850,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-expense_approvers",
@@ -897,7 +911,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-payroll_cost_center",
@@ -957,7 +972,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Department-shift_request_approver",
@@ -1017,7 +1033,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Designation-skills",
@@ -1077,7 +1094,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Designation-appraisal_template",
@@ -1137,7 +1155,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Designation-required_skills_section",
@@ -1197,7 +1216,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-grade",
@@ -1257,7 +1277,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-salary_cb",
@@ -1317,7 +1338,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-default_shift",
@@ -1377,7 +1399,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-job_applicant",
@@ -1437,7 +1460,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-leave_approver",
@@ -1497,7 +1521,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-column_break_45",
@@ -1557,7 +1582,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-employment_type",
@@ -1617,7 +1643,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-expense_approver",
@@ -1677,7 +1704,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-approvers_section",
@@ -1737,7 +1765,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-health_insurance_no",
@@ -1797,7 +1826,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-payroll_cost_center",
@@ -1857,7 +1887,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-shift_request_approver",
@@ -1917,7 +1948,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-health_insurance_section",
@@ -1977,7 +2009,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Employee-health_insurance_provider",
@@ -2037,7 +2070,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer",
@@ -2097,7 +2131,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_body",
@@ -2157,7 +2192,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_footer",
@@ -2217,7 +2253,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_header",
@@ -2277,7 +2314,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_settings",
@@ -2337,7 +2375,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_after_table",
@@ -2397,7 +2436,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_preview_img",
@@ -2457,7 +2497,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_print_format",
@@ -2517,7 +2558,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Format-print_designer_template_app",
@@ -2577,7 +2619,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Settings-compact_item_print",
@@ -2637,7 +2680,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Settings-print_uom_after_quantity",
@@ -2697,7 +2741,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Print Settings-print_taxes_with_zero_amount",
@@ -2757,7 +2802,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Project-total_expense_claim",
@@ -2817,7 +2863,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Task-total_expense_claim",
@@ -2877,7 +2924,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Terms and Conditions-hr",
@@ -2937,7 +2985,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   },
   {
     "name": "Timesheet-salary_slip",
@@ -2997,6 +3046,7 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Custom Field"
   }
 ]

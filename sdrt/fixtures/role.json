@@ -17,7 +17,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Agriculture Manager",
@@ -37,7 +38,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Agriculture User",
@@ -57,7 +59,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Analytics",
@@ -77,7 +80,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Auditor",
@@ -97,7 +101,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Dashboard Manager",
@@ -117,7 +122,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Delivery Manager",
@@ -137,7 +143,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Delivery User",
@@ -157,7 +164,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Fleet Manager",
@@ -177,7 +185,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Fulfillment User",
@@ -197,7 +206,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Inbox User",
@@ -217,7 +227,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Interviewer",
@@ -237,7 +248,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Item Manager",
@@ -257,7 +269,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Knowledge Base Contributor",
@@ -277,7 +290,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Knowledge Base Editor",
@@ -297,7 +311,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Maintenance Manager",
@@ -317,7 +332,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Maintenance User",
@@ -337,7 +353,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Manufacturing Manager",
@@ -357,7 +374,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Manufacturing User",
@@ -377,7 +395,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Prepared Report User",
@@ -397,7 +416,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Purchase Master Manager",
@@ -417,7 +437,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Report Manager",
@@ -437,7 +458,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Sales Master Manager",
@@ -457,7 +479,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Script Manager",
@@ -477,7 +500,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Translator",
@@ -497,7 +521,8 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   },
   {
     "name": "Workspace Manager",
@@ -517,6 +542,7 @@
     "_user_tags": null,
     "_comments": null,
     "_assign": null,
-    "_liked_by": null
+    "_liked_by": null,
+    "doctype": "Role"
   }
 ]
